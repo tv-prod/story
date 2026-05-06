@@ -1,0 +1,9 @@
+node_modules/
+skills-lock.json
+*.code-workspace
+קובץ חדש
+.claude/
+.agents/
+package-lock.json
+.DS_Store
+._*
