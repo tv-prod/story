@@ -73,16 +73,27 @@
 
         .question-block {
             display: none;
-            animation: fadeUp .4s ease;
         }
 
         .question-block.active {
             display: block;
+            animation: qFadeUp .38s cubic-bezier(0.16,1,0.3,1);
         }
 
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(20px); }
+        .question-block.question-exiting {
+            display: block !important;
+            animation: qFadeDown .22s ease forwards;
+            pointer-events: none;
+        }
+
+        @keyframes qFadeUp {
+            from { opacity: 0; transform: translateY(18px); }
             to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes qFadeDown {
+            from { opacity: 1; transform: translateY(0); }
+            to   { opacity: 0; transform: translateY(-10px); }
         }
 
         .question-num {
@@ -2166,17 +2177,34 @@
             overflow: hidden;
         }
 
-        /* atmospheric glow layer */
+        /* luxury mesh gradient + fine grid texture */
         .before-after-section::before {
             content: '';
             position: absolute;
             inset: 0;
             background:
-                radial-gradient(ellipse 90% 55% at 50% 58%, rgba(0,212,255,0.07) 0%, transparent 60%),
-                radial-gradient(ellipse 45% 35% at 18% 15%, rgba(40,80,255,0.04) 0%, transparent 55%),
-                radial-gradient(ellipse 45% 35% at 82% 85%, rgba(0,160,255,0.04) 0%, transparent 55%);
+                radial-gradient(ellipse 100% 65% at 50% 60%, rgba(0,212,255,0.065) 0%, transparent 58%),
+                radial-gradient(ellipse 55% 40% at 12% 10%, rgba(20,60,255,0.055) 0%, transparent 52%),
+                radial-gradient(ellipse 50% 38% at 88% 88%, rgba(0,130,255,0.055) 0%, transparent 52%),
+                radial-gradient(ellipse 38% 28% at 72% 18%, rgba(0,80,200,0.04) 0%, transparent 46%),
+                radial-gradient(ellipse 38% 28% at 28% 78%, rgba(10,90,255,0.04) 0%, transparent 46%);
             pointer-events: none;
             z-index: 0;
+        }
+
+        /* fine grid overlay — luxury depth without noise */
+        .before-after-section::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+            background-size: 52px 52px;
+            pointer-events: none;
+            z-index: 0;
+            mask-image: radial-gradient(ellipse 85% 70% at 50% 55%, black 30%, transparent 75%);
+            -webkit-mask-image: radial-gradient(ellipse 85% 70% at 50% 55%, black 30%, transparent 75%);
         }
 
         .ba-header {
@@ -2398,45 +2426,101 @@
             flex-shrink: 0;
         }
 
-        .ba-label-phone,
-        .ba-label-pro {
-            position: absolute;
-            top: 14px;
-            z-index: 9;
-            font-size: 9.5px;
-            font-weight: 700;
-            letter-spacing: 0;
-            padding: 5px 10px;
-            border-radius: 100px;
-            pointer-events: none;
+        /* ── External labels row ── */
+        .ba-video-container {
+            position: relative;
+            width: 100%;
+            max-width: 310px;
+            margin: 0 auto;
+        }
+
+        .ba-labels-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 14px;
+            padding: 0 2px;
+            direction: ltr;
+        }
+
+        .ba-ext-label-pro,
+        .ba-ext-label-phone {
             display: flex;
             align-items: center;
-            gap: 5px;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            white-space: nowrap;
-            direction: rtl;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
         }
 
-        .ba-label-phone {
-            right: 10px;
-            background: rgba(220,60,60,.18);
-            border: 1px solid rgba(220,60,60,.4);
-            color: #ff7878;
-        }
-
-        .ba-label-pro {
-            left: 10px;
-            background: rgba(0,212,255,.12);
-            border: 1px solid rgba(0,212,255,.4);
+        .ba-ext-label-pro {
             color: #00d4ff;
         }
 
-        .ba-label-phone svg,
-        .ba-label-pro svg {
-            width: 10px;
-            height: 10px;
+        .ba-ext-label-phone {
+            color: #ff7070;
+        }
+
+        .ba-ext-label-pro svg,
+        .ba-ext-label-phone svg {
+            width: 13px;
+            height: 13px;
             flex-shrink: 0;
+            opacity: 0.85;
+        }
+
+        /* ── Navigation arrows ── */
+        .ba-nav-btn {
+            position: absolute;
+            top: 42%;
+            transform: translateY(-50%);
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(8,8,20,0.55);
+            border: 1px solid rgba(255,255,255,0.13);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+            z-index: 10;
+            padding: 0;
+            outline: none;
+        }
+
+        .ba-nav-btn svg {
+            width: 18px;
+            height: 18px;
+            color: rgba(255,255,255,0.7);
+            flex-shrink: 0;
+            transition: color 0.22s ease;
+        }
+
+        .ba-nav-btn:hover {
+            background: rgba(0,212,255,0.14);
+            border-color: rgba(0,212,255,0.45);
+            box-shadow: 0 0 18px rgba(0,212,255,0.22);
+        }
+
+        .ba-nav-btn:hover svg {
+            color: #00d4ff;
+        }
+
+        .ba-nav-btn:disabled {
+            opacity: 0.25;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        .ba-nav-prev { right: -56px; }
+        .ba-nav-next { left: -56px; }
+
+        @media (max-width: 480px) {
+            .ba-nav-prev { right: 6px; background: rgba(0,0,0,0.6); }
+            .ba-nav-next { left: 6px; background: rgba(0,0,0,0.6); }
         }
 
         .ba-drag-hint {
@@ -2484,32 +2568,31 @@
         .ba-dot {
             width: 8px;
             height: 8px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.15);
+            border-radius: 100px;
+            background: rgba(255,255,255,0.22);
             cursor: pointer;
-            transition: all 0.28s ease;
-            border: 1px solid rgba(255,255,255,0.1);
+            transition: width 0.3s cubic-bezier(0.16,1,0.3,1), background 0.25s ease, box-shadow 0.25s ease;
+            border: none;
             padding: 0;
             outline: none;
             position: relative;
+            flex-shrink: 0;
         }
 
         .ba-dot::before {
             content: '';
             position: absolute;
-            inset: -6px;
+            inset: -8px;
         }
 
         .ba-dot.active {
+            width: 26px;
             background: #00d4ff;
-            border-color: #00d4ff;
-            box-shadow: 0 0 10px rgba(0,212,255,0.7);
-            transform: scale(1.35);
+            box-shadow: 0 0 12px rgba(0,212,255,0.75), 0 0 24px rgba(0,212,255,0.3);
         }
 
         .ba-dot:hover:not(.active) {
-            background: rgba(255,255,255,0.32);
-            transform: scale(1.15);
+            background: rgba(255,255,255,0.45);
         }
 
         .ba-pagination {
@@ -2543,6 +2626,17 @@
             position: relative;
             max-width: 900px;
             margin: 0 auto 36px;
+        }
+
+        /* Performance: defer rendering of off-screen sections */
+        .solution-section,
+        .how-section,
+        .fit-section,
+        .pain2-section,
+        .buy-section,
+        .wa-closer-section {
+            content-visibility: auto;
+            contain-intrinsic-size: 0 600px;
         }
 
         /* --- Instagram / Works Section --- */
@@ -3371,12 +3465,26 @@
     }
 
     function goToQuestion(num) {
-        document.getElementById('q' + (num - 1)).classList.remove('active');
-        document.getElementById('q' + num).classList.add('active');
-        currentQ = num;
+        const wrap = document.querySelector('.quiz-wrapper');
+        const prev = document.getElementById('q' + (num - 1));
+        const next = document.getElementById('q' + num);
 
-        const pct = (num / totalQ) * 100;
-        document.getElementById('progressFill').style.width = pct + '%';
+        // Lock height so layout doesn't jump during transition
+        wrap.style.minHeight = wrap.offsetHeight + 'px';
+
+        prev.classList.remove('active');
+        prev.classList.add('question-exiting');
+
+        setTimeout(function () {
+            prev.classList.remove('question-exiting');
+            next.classList.add('active');
+            requestAnimationFrame(function () {
+                requestAnimationFrame(function () { wrap.style.minHeight = ''; });
+            });
+        }, 230);
+
+        currentQ = num;
+        document.getElementById('progressFill').style.width = (num / totalQ * 100) + '%';
     }
 
     function showLoadingScreen() {
@@ -3472,20 +3580,19 @@ function initStickyCta() {
         const painSection = document.querySelector('.pain-story-section');
         if (painSection) painSection.classList.add('animate-ready');
 
-        const items = [...document.querySelectorAll('.pain-story-line, .pain-story-divider, .pain-story-closer, .pain-story-tag')];
+        const items = document.querySelectorAll('.pain-story-line, .pain-story-divider, .pain-story-closer, .pain-story-tag');
         if (!items.length) return;
 
-        function check() {
-            const vh = window.innerHeight;
-            items.forEach(el => {
-                if (!el.classList.contains('visible') && el.getBoundingClientRect().top < vh * 0.88) {
-                    el.classList.add('visible');
+        const obs = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) {
+                if (e.isIntersecting) {
+                    e.target.classList.add('visible');
+                    obs.unobserve(e.target);
                 }
             });
-        }
+        }, { threshold: 0, rootMargin: '0px 0px -12% 0px' });
 
-        window.addEventListener('scroll', check, { passive: true });
-        check();
+        items.forEach(function (el) { obs.observe(el); });
     }
 
     function initSweepAnimation() {
@@ -3620,22 +3727,26 @@ function initStickyCta() {
         const closer = document.querySelector('.pain2-closer');
         if (!lines.length) return;
 
-        function check() {
-            const vh = window.innerHeight;
-            lines.forEach(el => {
-                if (!el.classList.contains('lit')) {
-                    const rect = el.getBoundingClientRect();
-                    if (rect.top < vh * 0.82) el.classList.add('lit');
+        const linesObs = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) {
+                if (e.isIntersecting) {
+                    e.target.classList.add('lit');
+                    linesObs.unobserve(e.target);
                 }
             });
-            if (closer && !closer.classList.contains('visible')) {
-                const rect = closer.getBoundingClientRect();
-                if (rect.top < vh * 0.85) closer.classList.add('visible');
-            }
-        }
+        }, { threshold: 0, rootMargin: '0px 0px -18% 0px' });
 
-        window.addEventListener('scroll', check, { passive: true });
-        check();
+        lines.forEach(function (el) { linesObs.observe(el); });
+
+        if (closer) {
+            const closerObs = new IntersectionObserver(function (entries) {
+                if (entries[0].isIntersecting) {
+                    closer.classList.add('visible');
+                    closerObs.disconnect();
+                }
+            }, { threshold: 0, rootMargin: '0px 0px -15% 0px' });
+            closerObs.observe(closer);
+        }
     }
 
     function initFitCards() {
@@ -4057,40 +4168,56 @@ function initStickyCta() {
         </div>
 
         <div class="ba-stage">
-            <div class="ba-comparison-wrap" id="baWrap">
+            <div class="ba-video-container">
 
-                <!-- Phone (bottom layer) -->
-                <video class="ba-video ba-video-bottom" id="baVideoPhone"
-                    muted loop playsinline preload="auto"></video>
+                <!-- Prev arrow -->
+                <button class="ba-nav-btn ba-nav-prev" id="baPrev" aria-label="הזוג הקודם">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
 
-                <!-- Pro (top layer, clipped) -->
-                <video class="ba-video ba-video-top" id="baVideoPro"
-                    muted loop playsinline preload="auto"></video>
+                <div class="ba-comparison-wrap" id="baWrap">
 
-                <!-- Labels -->
-                <div class="ba-label-pro">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
-                    צולם במצלמה מקצועית
-                </div>
-                <div class="ba-label-phone">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-                    צולם בטלפון
-                </div>
+                    <!-- Phone (bottom layer) -->
+                    <video class="ba-video ba-video-bottom" id="baVideoPhone"
+                        muted playsinline preload="auto"></video>
 
-                <!-- Divider + Handle -->
-                <div class="ba-divider" id="baDivider">
-                    <div class="ba-divider-handle">
-                        <div class="ba-handle-arrows">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    <!-- Pro (top layer, clipped) -->
+                    <video class="ba-video ba-video-top" id="baVideoPro"
+                        muted playsinline preload="auto"></video>
+
+                    <!-- Divider + Handle -->
+                    <div class="ba-divider" id="baDivider">
+                        <div class="ba-divider-handle">
+                            <div class="ba-handle-arrows">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- Drag hint -->
+                    <div class="ba-drag-hint" id="baDragHint">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3"/></svg>
+                        גרור להשוואה
+                    </div>
+
                 </div>
 
-                <!-- Drag hint -->
-                <div class="ba-drag-hint" id="baDragHint">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3"/></svg>
-                    גרור להשוואה
+                <!-- Next arrow -->
+                <button class="ba-nav-btn ba-nav-next" id="baNext" aria-label="הזוג הבא">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+
+                <!-- External labels (outside the clipped video) -->
+                <div class="ba-labels-row">
+                    <div class="ba-ext-label-pro">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                        צולם במצלמה מקצועית
+                    </div>
+                    <div class="ba-ext-label-phone">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                        צולם בטלפון
+                    </div>
                 </div>
 
             </div>
@@ -4692,6 +4819,8 @@ function initStickyCta() {
     var videoPhone = document.getElementById('baVideoPhone');
     var dots       = document.querySelectorAll('#baPagination .ba-dot');
     var dragHint   = document.getElementById('baDragHint');
+    var btnPrev    = document.getElementById('baPrev');
+    var btnNext    = document.getElementById('baNext');
 
     if (!wrap) return;
 
@@ -4699,6 +4828,7 @@ function initStickyCta() {
     var sliderPct     = 50;
     var introPlayed   = false;
     var hintDismissed = false;
+    var currentPairIdx = 0;
 
     /* ---- slider ---- */
     function applySlider(pct) {
@@ -4752,9 +4882,24 @@ function initStickyCta() {
         if (p) p.catch(function () { v.muted = true; v.play().catch(function () {}); });
     }
 
+    /* seamless loop: reset just before end to avoid the decode-gap black frame */
+    function addSeamlessLoop(v) {
+        v.loop = false;
+        v.addEventListener('timeupdate', function () {
+            if (v.duration && v.currentTime >= v.duration - 0.18) {
+                v.currentTime = 0;
+            }
+        });
+    }
+    addSeamlessLoop(videoPhone);
+    addSeamlessLoop(videoPro);
+
     /* ---- load pair ---- */
     function loadPair(idx) {
+        currentPairIdx = idx;
         dots.forEach(function (d, i) { d.classList.toggle('active', i === idx); });
+        if (btnPrev) btnPrev.disabled = idx === 0;
+        if (btnNext) btnNext.disabled = idx === PAIRS.length - 1;
 
         videoPhone.oncanplay = null;
         videoPro.oncanplay   = null;
@@ -4776,6 +4921,14 @@ function initStickyCta() {
         dot.addEventListener('click', function () {
             loadPair(parseInt(dot.getAttribute('data-idx'), 10));
         });
+    });
+
+    /* ---- prev / next arrows ---- */
+    if (btnPrev) btnPrev.addEventListener('click', function () {
+        if (currentPairIdx > 0) loadPair(currentPairIdx - 1);
+    });
+    if (btnNext) btnNext.addEventListener('click', function () {
+        if (currentPairIdx < PAIRS.length - 1) loadPair(currentPairIdx + 1);
     });
 
     /* ---- intro animation ---- */
